@@ -112,24 +112,6 @@ The `@elizaos/plugin-hedera` plugin enables seamless integration with the Hedera
 
 
 
-
-
-
-
-# ElizaOS - Your Autonomous AI Agent Platform
-
-ElizaOS is an open-source platform for building and deploying autonomous AI agents. It provides a flexible and modular architecture, allowing developers to create intelligent agents that can interact with the world, learn from experience, and achieve complex goals.
-
-## Key Features
-
-* **Modular Agent Architecture:** Design agents with composable skills and knowledge.
-* **Multi-Modal Communication:** Agents can interact through text, audio, and potentially more.
-* **Knowledge Management:** Robust system for storing, retrieving, and utilizing information.
-* **Extensible Plugin System:** Easily add new capabilities and integrations.
-* **Built with Cutting-Edge Technologies:** Leveraging modern tools for performance and scalability.
-
-
-
 ## Hedera Integration
 
 ElizaOS utilizes the Hedera network through the `@elizaos/plugin-hedera`. This plugin empowers the `HederaHelper` agent to interact with the Hedera ledger for a variety of operations, including checking balances, transferring tokens, creating new tokens and topics, and managing consensus service messages.

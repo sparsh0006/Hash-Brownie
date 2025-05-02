@@ -136,83 +136,147 @@ ElizaOS is an open-source platform for building and deploying autonomous AI agen
 
 ## Hedera Integration
 
-ElizaOS utilizes the Hedera network for [**Explain the primary use case of Hedera here, e.g., secure and transparent logging of agent actions, decentralized identity management, verifiable data storage**]. This provides immutability and trust for critical agent operations.
+ElizaOS utilizes the Hedera network through the `@elizaos/plugin-hedera`. This plugin empowers the `HederaHelper` agent to interact with the Hedera ledger for a variety of operations, including checking balances, transferring tokens, creating new tokens and topics, and managing consensus service messages.
 
-You can see how Hedera is integrated within the ElizaOS codebase in the following location:
+The `HederaHelper` character, defined in `agent/src/defaultCharacter.ts` (as shown below), explicitly includes the `hederaPlugin` in its configuration:
 
 ```typescript
-// agent/src/index.ts
-import { /* Hedera related classes/functions */ } from './lib/hedera';
+// agent/src/defaultCharacter.ts
+import { type Character, ModelProviderName } from '@elizaos/core';
+import { hederaPlugin } from '@elizaos/plugin-hedera';
+import telegramClient from '@elizaos/client-telegram';
 
-class AgentRuntime {
-  async performAction(action: Action) {
-    // ... agent logic ...
-    const transactionId = await hederaService.logAction(action);
-    console.log(`Action logged on Hedera with transaction ID: ${transactionId}`);
-    // ... more agent logic ...
-  }
-}
+export const defaultCharacter: Character = {
+  'name': 'HederaHelper',
+  'username': 'hederahelper',
+  "clients": [
+    telegramClient,],
+    // @ts-ignore
+  'plugins': [hederaPlugin], // <--- Hedera Plugin Integration
+
+  'modelProvider': ModelProviderName.OPENAI,
+  'settings': {
+    'secrets': {
+      'key': 'YOUR_TELEGRAM_BOT_KEY', // Replace with your actual key
+    },
+    'voice': {
+      'model': 'en_US-hfc_female-medium',
+    },
+  },
+  'system':
+    'Act as a helpful assistant specializing in Hedera Hashgraph operations. ... (rest of the system prompt) ...',
+  // ... (rest of the character definition) ...
+};
 ```
-In the agent/src/index.ts file, the AgentRuntime class demonstrates how the hederaService (which would be an abstraction over the Hedera SDK) is used to log agent actions on the Hedera network. This ensures a verifiable and tamper-proof record of the agent's activities. [Adjust the file path and code snippet to accurately reflect your Hedera usage.]
+This configuration within defaultCharacter.ts demonstrates the integration of the Hedera plugin, enabling the HederaHelper agent with Hedera-specific functionalities. The system prompt further guides the agent to process user requests for interacting with the Hedera network.
 
-HIP-991 and/or HCS-10 Usage
-[Choose the relevant section based on which HIP you've implemented or if you've implemented HCS-10.]
-
-HIP-991: Account Association
-ElizaOS leverages HIP-991 for [Explain how you are using Account Association, e.g., allowing users to associate their Hedera accounts with their agent instances for enhanced control and ownership]. This feature enables a more direct and secure interaction between users and their agents on the Hedera network.
-
-The code demonstrating the usage of HIP-991 can be found here:
+The messageExamples within the same file illustrate how users can interact with the HederaHelper for various Hedera operations, implying the use of functionalities provided by the @elizaos/plugin-hedera:
 
 ```TypeScript
 
-// client/src/lib/api.ts
-export async function associateAccount(agentId: string, accountId: string) {
-  const response = await fetch('/api/hedera/associate', {
-    method: 'POST',
-    body: JSON.stringify({ agentId, accountId }),
-    headers: { 'Content-Type': 'application/json' },
-  });
-  // ... handle response ...
-}
+// agent/src/defaultCharacter.ts (Message Examples)
+'messageExamples': [
+  [
+    {
+      'user': '{{user1}}',
+      'content': {
+        'text': "What's my HBAR balance?",
+      },
+    },
+    {
+      'user': 'HederaHelper',
+      'content': {
+        'text': 'Checking your HBAR balance now.',
+        'action': 'HEDERA_HBAR_BALANCE', // <--- Potential Hedera Action
+      },
+    },
+  ],
+  [
+    {
+      'user': '{{user1}}',
+      'content': {
+        'text': 'Transfer 50 HBAR to 0.0.67890',
+      },
+    },
+    {
+      'user': 'HederaHelper',
+      'content': {
+        'text': 'Initiating the transfer of 50 HBAR to account 0.0.67890.',
+        'action': 'TRANSFER_HBAR', // <--- Potential Hedera Action
+      },
+    },
+  ],
+  // ... (other examples for token balance, transfers, creation, association, topic management) ...
+],
 ```
-The associateAccount function in client/src/lib/api.ts shows an example of how the frontend interacts with the backend to initiate the account association process as defined by HIP-991. [Adjust the file path and code snippet accordingly.]
+These examples suggest that the @elizaos/plugin-hedera provides the underlying logic to handle actions like HEDERA_HBAR_BALANCE, TRANSFER_HBAR, HEDERA_CREATE_TOKEN, HEDERA_ASSOCIATE_TOKEN, HEDERA_CREATE_TOPIC, and HEDERA_SUBMIT_TOPIC_MESSAGE.
 
-HCS-10: Decentralized Topic Messaging
-ElizaOS utilizes HCS-10 to enable [Explain how you are using HCS-10, e.g., real-time communication between agents and users, broadcasting events within the ElizaOS ecosystem in a decentralized manner]. This allows for secure, ordered, and tamper-proof messaging between different components of the ElizaOS platform.
+HIP-991 and/or HCS-10 Usage (via @elizaos/plugin-hedera)
+Based on the messageExamples, the @elizaos/plugin-hedera likely handles HIP-991 for token association and HCS-10 for topic creation and message submission.
 
-Here's an example of how HCS-10 is used in the backend:
+For HIP-991 (Token Association), the following messageExample demonstrates its usage:
 
 ```TypeScript
 
-// agent/src/services/hcsService.ts (This is a hypothetical path, adjust to your actual path)
-import { /* HCS related classes/functions */ } from '@hashgraph/sdk';
-
-class HCSService {
-  topicId: TopicId;
-  client: Client;
-
-  constructor() {
-    this.topicId = TopicId.fromString(process.env.HCS_TOPIC_ID!);
-    this.client = Hedera.getClient();
-  }
-
-  async sendMessage(message: string) {
-    const submitTransaction = await new TopicMessageSubmitTransaction({
-      topicId: this.topicId,
-      message: message,
-    }).execute(this.client);
-    const receipt = await submitTransaction.getReceipt(this.client);
-    console.log(`HCS message submitted with receipt: ${receipt.status}`);
-  }
-}
+// agent/src/defaultCharacter.ts (Token Association Example)
+[
+  {
+    'user': '{{user1}}',
+    'content': {
+      'text': 'Associate token 0.0.112233 with my account.',
+    },
+  },
+  {
+    'user': 'HederaHelper',
+    'content': {
+      'text': 'Associating token 0.0.112233 with your account.',
+      'action': 'HEDERA_ASSOCIATE_TOKEN', // <--- HIP-991 Implementation via Plugin
+    },
+  },
+],
 ```
-The HCSService (in a hypothetical agent/src/services/hcsService.ts file) illustrates how the Hedera Consensus Service (HCS-10) is used to send messages to a specific topic. This allows for decentralized and auditable communication within the ElizaOS platform. [Make sure to replace the hypothetical file path and code with your actual implementation.]
+This interaction indicates that the @elizaos/plugin-hedera provides the functionality to associate a token with a user's Hedera account, aligning with the principles of HIP-991.
 
+For HCS-10 (Decentralized Topic Messaging), the following messageExamples showcase its use:
 
+```TypeScript
 
+// agent/src/defaultCharacter.ts (HCS-10 Examples)
+[
+  {
+    'user': '{{user1}}',
+    'content': {
+      'text': "Create a topic with memo 'Project Updates'",
+    },
+  },
+  {
+    'user': 'HederaHelper',
+    'content': {
+      'text': "Creating a new HCS topic with memo 'Project Updates'.",
+      'action': 'HEDERA_CREATE_TOPIC', // <--- HCS-10 Implementation via Plugin
+    },
+  },
+],
+[
+  {
+    'user': '{{user1}}',
+    'content': {
+      'text': "Submit message 'Meeting rescheduled' to topic 0.0.445566",
+    },
+  },
+  {
+    'user': 'HederaHelper',
+    'content': {
+      'text':
+        "Submitting message 'Meeting rescheduled' to topic 0.0.445566.",
+      'action': 'HEDERA_SUBMIT_TOPIC_MESSAGE', // <--- HCS-10 Implementation via Plugin
+    },
+  },
+],
+```
+These examples clearly show the agent's ability to create new Hedera Consensus Service topics and submit messages to existing topics, demonstrating the HCS-10 capabilities likely implemented within the @elizaos/plugin-hedera.
 
-
-
+the defaultCharacter.ts file, we can see that the @elizaos/plugin-hedera is central to enabling Hedera functionalities within the HederaHelper agent, including features related to HIP-991 and HCS-10. The plugin abstracts the underlying Hedera SDK complexities, allowing the agent to interact with the network through a more streamlined interface.
 ## 🤝 Contributing
 
 Contributions are welcome! Please refer to the CONTRIBUTING.md file for guidelines.

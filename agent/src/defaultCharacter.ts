@@ -239,12 +239,4 @@ export const defaultCharacter: Character = {
     'functional',
   ],
   'extends': [],
-  'templates': {
-    'telegramMessageHandlerTemplate': 'Your custom template here',
-  },
-  'clientConfig': {
-    'telegram': {
-      shouldIgnoreBotMessages: false,
-    },
-  },
 };

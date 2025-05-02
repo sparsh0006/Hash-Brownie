@@ -23,18 +23,24 @@ Eliza is a multi-agent simulation framework designed to create intelligent, auto
    cd hedera-ai-agent-workshop
    ```
 
-2. Install dependencies:
+2. Move to the eliza directory 
+
+    ```bash
+    cd eliza
+    ```   
+
+3. Install dependencies:
 
    ```bash
    pnpm install
    ```
 
-3. Set up the environment variables:
+4. Set up the environment variables:
 
    ```bash
    cp .env.example .env
    ```
-4. Add your model provider api key in the env  
+5. Add your model provider api key in the env  
    
    ```bash
    OPENAI_API_KEY=your_openai_api_key

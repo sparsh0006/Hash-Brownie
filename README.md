@@ -8,6 +8,7 @@ Eliza is a multi-agent simulation framework designed to create intelligent, auto
 - **Extensible Plugins**: Add custom functionality to agents with a modular plugin system.
 - **Telegram Client Support**: Enable agent communication via Telegram.
 
+
 ## 📂 Project Structure
 
 - **`agent/`**: Contains the core logic for agent simulation.
@@ -88,10 +89,26 @@ pnpm test
 
 The `@elizaos/plugin-hedera` plugin enables seamless integration with the Hedera network. It provides the following features:
 
-- **Account Management**: Create and manage Hedera accounts.
-- **Token Transactions**: Interact with Hedera tokens for payments and transfers.
-- **Smart Contract Execution**: Deploy and call smart contracts on the Hedera network.
+### Hedera Token Service (HTS)
+- **Create Tokens**: Create fungible and non-fungible tokens with customizable parameters
+- **Mint Tokens**: Add supply to existing tokens
+- **Transfer Tokens**: Move tokens between accounts
+- **Associate/Dissociate Tokens**: Manage token relationships with accounts
+- **Token Operations**: Reject tokens, query balances, retrieve token holder information
 
+### Hedera Consensus Service (HCS)
+- **Topic Management**: Create, delete, and manage topics
+- **Message Submission**: Send messages to topics
+- **Information Retrieval**: Fetch topic information and messages with time-based filtering
+
+### HBAR Operations
+- **Transfer HBAR**: Send HBAR between accounts
+- **Balance Queries**: Check account balances
+
+### Airdrop Management
+- **Distribute Tokens**: Airdrop tokens to multiple recipients
+- **Claim Airdrops**: Retrieve pending airdrops
+- **Query Pending Airdrops**: View available airdrops for accounts
 
 ## 🤝 Contributing
 

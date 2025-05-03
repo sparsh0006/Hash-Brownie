@@ -297,4 +297,8 @@ Contributions are welcome! Please refer to the CONTRIBUTING.md file for guidelin
 
 ## 📜 License
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+This project is licensed under the MIT License. 
+
+## 🔗 hedera-telegram-client
+
+[telegram-client](https://github.com/sparsh0006/tg-bot-hedera)
